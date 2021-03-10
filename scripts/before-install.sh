@@ -17,4 +17,4 @@ server {
 }
 EOF
 
-ln -s /etc/nginx/sites-available/xeniapp /etc/nginx/sites-enabled/
+ln -svf /etc/nginx/sites-available/xeniapp /etc/nginx/sites-enabled/
