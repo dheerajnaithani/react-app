@@ -1,13 +1,16 @@
 #!/bin/bash
-mkdir -p /etc/nginx/site-available/xeniapp
-chmod 755 /etc/nginx/site-available/xeniapp
 
-mkdir -p /etc/nginx/site-enabled
-chmod 755 /etc/nginx/site-enabled
+mkdir -p /etc/nginx/sites-enabled
+chmod 755 /etc/nginx/sites-enabled
 
-cat <<-EOF > /etc/nginx/site-enabled/xeniapp
+mkdir -p /etc/nginx/sites-available/
+chmod 755 /etc/nginx/sites-available
+
+cat <<-EOF > /etc/nginx/sites-available/xeniapp
 server {
        listen 80;
+       listen [::]:80 default_server;
+       server_name _;
 
        root /opt/xeniuser;
        index index.html;
@@ -18,4 +21,4 @@ server {
 }
 EOF
 
-chmod 755 /etc/nginx/site-enabled/xeniapp
+ln -s /etc/nginx/sites-available/xeniapp /etc/nginx/sites-enabled/
