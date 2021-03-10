@@ -8,16 +8,12 @@ chmod 755 /etc/nginx/sites-available
 
 cat <<-EOF > /etc/nginx/sites-available/xeniapp
 server {
-       listen 80;
-       listen [::]:80 default_server;
+       listen 80 default_server;
        server_name _;
 
-       root /opt/xeniuser;
        index index.html;
 
-       location / {
-               try_files $uri $uri/ /index.html;
-       }
+       root /opt/xeniuser;
 }
 EOF
 
