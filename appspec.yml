@@ -1,0 +1,18 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /etc/nginx/sites-available/xeniapp
+hooks:
+  ApplicationStop:
+    - location: scripts/application-stop.sh
+      timeout: 300
+      runas: root
+  BeforeInstall:
+    - location: scripts/before-install.sh
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: scripts/application-start.sh
+      timeout: 300
+      runas: root
