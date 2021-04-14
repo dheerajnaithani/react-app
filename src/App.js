@@ -8,7 +8,7 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           <code>src/App.js</code>
-          Today is 22nd
+          Today is 14 April
 
         </p>
         <a
