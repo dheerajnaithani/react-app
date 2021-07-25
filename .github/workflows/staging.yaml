@@ -1,0 +1,66 @@
+name: "Build and deploy to EC2"
+
+on:
+  push:
+    branches:
+      - staging
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    name: Setup XeniApp Deployment Environment
+    steps:
+      - name: Set env to dev
+        if: endsWith(github.ref, '/staging')
+        run: |
+          echo "XENIENV_NAME=dev" >> $GITHUB_ENV
+          echo "XENIENV_NAME=dev" >> env.txt
+      - name: Set env to prod
+        if: endsWith(github.ref, '/main')
+        run: |
+          echo "XENIENV_NAME=prod" >> $GITHUB_ENV
+          echo "XENIENV_NAME=prod" >> env.txt
+      - name: Set App Name
+        run: echo "APP_NAME=Xeniapp-frontned-${{ env.XENIENV_NAME }}" >> env.txt
+      - name: Set Bucket Name
+        run:  echo "S3-BUCKET=${{ env.XENIENV_NAME }}.booking.clubxeni.com-ui-deploy" >> env.txt
+      - name: Set Source Directory
+        run: |
+          echo "SOURCE_DIR=./build" >> env.txt
+
+  build-test-and-upload:
+    needs: init
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download env-vars
+        uses: actions/download-artifact@v2
+        with:
+          name: env-vars
+      - name: Set Env vars
+        run: cat env.txt >> $GITHUB_ENV
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Packages
+        run: yarn install
+
+      - name: Run ESLint
+        run: yarn run lint
+
+      - name: Run Prettier
+        run: yarn run format:check
+
+      - name: Create package
+        run : node node_modules/.bin/npm-pack-all --output ${{ env.FILENAME }}
+
+      - name: Set Up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Upoload to S3
+        run: |
+          aws s3 sync ${{ env.SOURCE_DIR }} s3://${{ env.S3-BUCKET }} --delete \
+
+
