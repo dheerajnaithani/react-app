@@ -26,6 +26,11 @@ jobs:
       - name: Set Source Directory
         run: |
           echo "SOURCE_DIR=./build" >> env.txt
+      - name: Upload env-vars
+        uses: actions/upload-artifact@v2
+        with:
+          name: env-vars
+          path: env.txt
 
   build-test-and-upload:
     needs: init
