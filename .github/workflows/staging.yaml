@@ -26,6 +26,9 @@ jobs:
       - name: Set Source Directory
         run: |
           echo "SOURCE_DIR=./build" >> env.txt
+      - name: Set Cloudfront Distribution Id
+        run: |
+          echo "AWS_CF_DISTRIBUTION_ID=E3OPZLT7BMEFOV" >> env.txt
       - name: Upload env-vars
         uses: actions/upload-artifact@v2
         with:
@@ -54,8 +57,8 @@ jobs:
       - name: Run Prettier
         run: yarn run format:check
 
-      - name: Create package
-        run : node node_modules/.bin/npm-pack-all --output ${{ env.FILENAME }}
+      - name: Build Application
+        run : yarn build
 
       - name: Set Up AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -64,8 +67,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Upoload to S3
-        run: |
-          aws s3 sync ${{ env.SOURCE_DIR }} s3://${{ env.S3-BUCKET }} --delete \
+       - uses: jakejarvis/s3-sync-action@master
+         name: Upload App to S3 Bucket
+         with:
+           args: --follow-symlinks --delete --cache-control max-age=2592000
+         env:
+           AWS_S3_BUCKET: ${{ env.S3-BUCKET }}
+           SOURCE_DIR: ${{ env.SOURCE_DIR }}
+
+       - name: Create CloudFront Cache Invalidation
+         uses: chetan/invalidate-cloudfront-action@master
+         env:
+           DISTRIBUTION: ${{ env.AWS_CF_DISTRIBUTION_ID }}
+           PATHS: '/*'
 
 

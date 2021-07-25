@@ -1,5 +1,7 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+
+import logo from './logo.svg'
+import './App.css'
 
 function App() {
   return (
@@ -9,7 +11,6 @@ function App() {
         <p>
           <code>src/App.js</code>
           Today is 14 April
-
         </p>
         <a
           className="App-link"
@@ -21,7 +22,7 @@ function App() {
         </a>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
