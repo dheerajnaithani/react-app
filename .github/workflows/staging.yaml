@@ -67,13 +67,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-       - uses: jakejarvis/s3-sync-action@master
-         name: Upload App to S3 Bucket
-         with:
-           args: --follow-symlinks --delete --cache-control max-age=2592000
-         env:
-           AWS_S3_BUCKET: ${{ env.S3-BUCKET }}
-           SOURCE_DIR: ${{ env.SOURCE_DIR }}
+      - name: Upload App to S3 Bucket
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --follow-symlinks --delete --cache-control max-age=2592000
+        env:
+          SOURCE_DIR: ${{ env.SOURCE_DIR }}
 
        - name: Create CloudFront Cache Invalidation
          uses: chetan/invalidate-cloudfront-action@master
