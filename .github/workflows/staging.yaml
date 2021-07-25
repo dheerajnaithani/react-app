@@ -73,7 +73,6 @@ jobs:
           args: --follow-symlinks --delete --cache-control max-age=2592000
         env:
           SOURCE_DIR: ${{ env.SOURCE_DIR }}
-
        - name: Create CloudFront Cache Invalidation
          uses: chetan/invalidate-cloudfront-action@master
          env:
