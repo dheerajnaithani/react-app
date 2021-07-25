@@ -67,5 +67,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Sync S3 bucket
+        run: |
+          aws s3 sync ${{ env.SOURCE_DIR }} s3://${{ env.S3-BUCKET }} --acl public-read --follow-symlinks --delete \
 
 
