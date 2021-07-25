@@ -22,7 +22,7 @@ jobs:
       - name: Set App Name
         run: echo "APP_NAME=Xeniapp-frontned-${{ env.XENIENV_NAME }}" >> env.txt
       - name: Set Bucket Name
-        run:  echo "S3-BUCKET=${{ env.XENIENV_NAME }}.booking.clubxeni.com-ui-deploy" >> env.txt
+        run: echo "S3-BUCKET=${{ env.XENIENV_NAME }}.booking.clubxeni.com-ui-deploy" >> env.txt
       - name: Set Source Directory
         run: |
           echo "SOURCE_DIR=./build" >> env.txt
@@ -58,17 +58,27 @@ jobs:
         run: yarn run format:check
 
       - name: Build Application
-        run : yarn build
+        run: yarn build
 
       - name: Upload App to S3 Bucket
         uses: jakejarvis/s3-sync-action@master
         with:
           args: --follow-symlinks --delete --cache-control max-age=2592000
         env:
+          AWS_S3_BUCKET: ${{ env.S3-BUCKET }}
           SOURCE_DIR: ${{ env.SOURCE_DIR }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_REGION: us-east-1
+
+      - name: Create CloudFront Cache Invalidation
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          DISTRIBUTION: ${{ env.AWS_CF_DISTRIBUTION_ID }}
+          PATHS: '/*'
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
 
 
 
